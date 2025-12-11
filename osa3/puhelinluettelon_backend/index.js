@@ -87,11 +87,14 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const person = {
+  const person = new Person({
     name: name,
     number: number,
-    id: getId(100).toString()
-  }
+  })
+
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 
   persons = persons.concat(person)
   console.log(person)
