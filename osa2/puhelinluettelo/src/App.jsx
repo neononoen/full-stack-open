@@ -29,35 +29,47 @@ const App = () => {
           .replace(person.id, updatedPerson)
             .then(returnedPerson => {
               setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+              setMessage(`${newName} number changed`)
+              setTimeout(() => {
+                setMessage(null)
+              }, 5000)
+              setNewName('')
+              setNewNumber('')
             })
             .catch(error => {
-              setMessage(`${newName} has already been removed from server`)
+              console.log(error.response.data)
+              const errorMessage = error.response.data.error || `${newName} has already been removed from server`
+              setMessage(errorMessage)
               setTimeout(() => {
               setMessage(null)
               }, 5000)
+              if (!error.response.data) {
               setPersons(persons.filter(p => p.id !== person.id))
+              }
             })
-      
-        setMessage(`${newName} number changed`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
       }
     } else {
       personService
         .add(personObject)
           .then(returnedPerson => {
             setPersons(persons.concat(returnedPerson))
-          
-      })
-      setMessage(`Added ${newName}`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-    }
-    setNewName('')
-    setNewNumber('')
-  }
+            setMessage(`Added ${newName}`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch(error => {
+            console.log(error.response.data)
+            const errorMessage = error.response.data.error
+            setMessage(errorMessage)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
+        }
+      }
 
   const removePerson = (event) => {
     const id = event.target.value
@@ -66,14 +78,14 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personService
         .remove(id)
-      setPersons(persons.filter(person => person.id !== id))
-      
-      setMessage(`Deleted ${person.name}`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-    }
-  }
+          setPersons(persons.filter(person => person.id !== id))
+          
+          setMessage(`Deleted ${person.name}`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        }
+      }
 
   const handleNameChange = (event) => {    
     console.log(event.target.value)    
